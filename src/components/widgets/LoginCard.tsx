@@ -2,7 +2,11 @@ import { DaySun } from "../img/DaySun";
 import Button from "../html/Button";
 import Input from "../html/Input";
 
-export const LoginCard = () => {
+interface LoginCardProps {
+  onLogin?: () => void;
+}
+
+export const LoginCard = ({ onLogin }: LoginCardProps) => {
   return (
     <div className="login-card">
       <div className="login-logo">
@@ -24,7 +28,7 @@ export const LoginCard = () => {
           />
         </div>
 
-        <Button className="login-button-box">
+        <Button className="login-button-box" onClick={onLogin}>
           <div className="login-button-text">로그인</div>
         </Button>
       </div>
