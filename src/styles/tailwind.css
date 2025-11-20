@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: Pretendard, Helvetica, sans-serif;
+  }
+}
+
+@layer components {
+  .login-card {
+    @apply inline-flex flex-col  w-[30vw] min-w-[250px]  aspect-4/5 items-center justify-center gap-12 px-[4.5vw] py-[5vh] relative  bg-white rounded-4xl shadow-[0px_0px_8px_2px_#0000001a];
+  }
+
+  .login-logo {
+    @apply inline-flex flex-col items-center gap-6 relative flex-[0_0_auto];
+  }
+  .login-logo-image {
+    @apply w-[40%] aspect-square max-w-[900px]  min-w-[100px];
+  }
+  .login-logo-title {
+    @apply relative w-fit text-center font-['Pretendard-SemiBold',Helvetica] font-semibold text-[#292e2e] text-lg sm:text-xl md:text-2xl lg:text-3xl min-w-[200px] tracking-[0] leading-[normal] whitespace-nowrap;
+  }
+
+  .login-input-container {
+    @apply flex flex-col items-start gap-8 relative self-stretch w-full flex-[0_0_auto];
+  }
+  .login-input-inputs {
+    @apply flex flex-col items-center gap-7 relative self-stretch w-full flex-[0_0_auto];
+  }
+  .login-input-box {
+    @apply flex items-center gap-2.5 px-0 py-3 relative self-stretch w-full min-w-8 flex-[0_0_auto] border-b-2 [border-bottom-style:solid] border-[#a4a4a4];
+  }
+  .login-input-placeholder {
+    @apply relative w-fit -mt-0.5 font-['Pretendard-Regular',Helvetica] font-normal text-[#a4a4a4] text-base sm:text-lg md:text-xl lg:text-xl min-w-[200px] tracking-[0] leading-[normal] whitespace-nowrap;
+  }
+
+  .login-button-box {
+    @apply flex items-center justify-center gap-2.5 px-11 py-4 relative self-stretch w-full flex-[0_0_auto] bg-[#7544e5] rounded-2xl min-h-12;
+  }
+  .login-button-text {
+    @apply relative w-fit -mt-px font-['Pretendard-SemiBold',Helvetica] font-semibold text-white text-lg sm:text-lg md:text-2xl tracking-[0] leading-[normal] whitespace-nowrap;
+  }
+}
