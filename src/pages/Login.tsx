@@ -9,7 +9,7 @@ export const Login = () => {
   };
 
   return (
-    <div className="flex w-screen h-screen items-center justify-center relative bg-neutral-100">
+    <div className="flex flex-row w-screen h-screen items-center justify-center relative bg-neutral-100">
       <LoginCard onLogin={handleLogin} />
     </div>
   );
