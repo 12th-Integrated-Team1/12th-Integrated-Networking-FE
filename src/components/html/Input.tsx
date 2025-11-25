@@ -5,6 +5,7 @@ interface InputProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  endIcon?: React.ReactNode;
 }
 
 export default function Input({
@@ -14,6 +15,7 @@ export default function Input({
   value,
   onChange,
   required,
+  endIcon,
 }: InputProps) {
   return (
     <div className={wrapperClassName}>
@@ -25,6 +27,7 @@ export default function Input({
         onChange={onChange}
         required={required}
       />
+      {endIcon && <div className="ml-2">{endIcon}</div>}
     </div>
   );
 }
