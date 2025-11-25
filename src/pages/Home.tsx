@@ -5,6 +5,10 @@ import HomeDefault from "../components/widgets/HomeDefault";
 import Sidebar from "../components/widgets/Sidebar";
 import { useNavigate } from "react-router-dom";
 import type { KakaoPlace } from "../types/kakao";
+import TodayWeatherPanel from "../components/weather/TodayWeatherPanel";
+import HourlyWeatherPanel from "../components/weather/HourlyWeatherPanel";
+import WeeklyWeatherPanel from "../components/weather/WeeklyWeatherPanel";
+import { mockToday, mockHourly, mockWeekly } from "../mock/weatherMock";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -108,8 +112,15 @@ export default function Home() {
         onLogout={handleLogout}
       />
       <div className="flex flex-col w-full items-center relative">
-        <HomeDefault />
-      </div>
+        <div className="w-full flex justify-center pt-16 pb-20">
+          <div className="w-full max-w-[1100px] px-6 flex flex-col gap-12">
+           <TodayWeatherPanel data={mockToday} />
+           <HourlyWeatherPanel list={mockHourly} />
+           <WeeklyWeatherPanel data={mockWeekly} />
+          </div>
+        </div>
+        /* <HomeDefault /> */
+     </div>
 
       {/* 장소 삭제 모달 + 배경 */}
       {deleteModalOpen && (
@@ -136,6 +147,7 @@ export default function Home() {
           </div>
         </>
       )}
+
     </div>
   );
 }
