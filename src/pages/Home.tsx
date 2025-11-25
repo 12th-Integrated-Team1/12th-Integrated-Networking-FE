@@ -4,6 +4,7 @@ import DeleteModal from "../components/widgets/DeleteModal";
 import HomeDefault from "../components/widgets/HomeDefault";
 import Sidebar from "../components/widgets/Sidebar";
 import { useNavigate } from "react-router-dom";
+import type { KakaoPlace } from "../types/kakao";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -13,22 +14,39 @@ export default function Home() {
   };
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const [addModalOpen, setAddModalOpen] = useState(false);
 
-  const [places, setPlaces] = useState([
-    { id: 1, name: "강남역 1번 출구" },
-    { id: 2, name: "RATTHAT" },
-    { id: 3, name: "파이홀" },
-    { id: 4, name: "청수당공명" },
-    { id: 5, name: "롯데월드" },
-    { id: 6, name: "구관" },
-    { id: 7, name: "Osiu" },
+  const [places, setPlaces] = useState<KakaoPlace[]>([
+    {
+      id: "1",
+      place_name: "롯데월드",
+      road_address_name: "서울특별시 송파구 올림픽로 240",
+      address_name: "서울특별시 송파구 잠실동 40-1",
+      x: "127.098119",
+      y: "37.511028",
+    },
+    {
+      id: "2",
+      place_name: "서울숲",
+      road_address_name: "서울특별시 성동구 뚝섬로 273",
+      address_name: "서울특별시 성동구 성수동1가 685-1",
+      x: "127.038287",
+      y: "37.544560",
+    },
+    {
+      id: "3",
+      place_name: "경복궁",
+      road_address_name: "서울특별시 종로구 사직로 161",
+      address_name: "서울특별시 종로구 세종로 1-1",
+      x: "126.976933",
+      y: "37.579617",
+    },
   ]);
 
   // Sidebar에서 삭제 클릭 시 호출
-  const openDeleteModal = (id: number) => {
+  const openDeleteModal = (id: string) => {
     setDeleteTargetId(id);
     setDeleteModalOpen(true);
   };
@@ -36,7 +54,7 @@ export default function Home() {
   //삭제 확인
   const confirmDelete = () => {
     if (deleteTargetId !== null) {
-      setPlaces(places.filter((p) => p.id !== deleteTargetId));
+      setPlaces(places.filter((p) => p.id !== String(deleteTargetId)));
       setDeleteTargetId(null);
       setDeleteModalOpen(false);
     }
@@ -57,9 +75,28 @@ export default function Home() {
     setAddModalOpen(false);
   };
   //추가 확정
-  const confirmAdd = () => {
+  const confirmAdd = (selectedPlace: KakaoPlace | null) => {
+    if (selectedPlace) {
+      // 기존 places에 추가
+      setPlaces((prev) => {
+        //현재 id중 제일 큰 값 찾기
+        const maxId = prev.length
+          ? Math.max(...prev.map((p) => Number(p.id)))
+          : 0;
+
+        return [
+          ...prev,
+          {
+            ...selectedPlace,
+            id: String(Date.now()),
+          },
+        ];
+      });
+    }
     setAddModalOpen(false);
   };
+
+  console.log(places);
 
   return (
     <div className="flex w-screen h-screen items-center gap-0 relative bg-neutral-100">

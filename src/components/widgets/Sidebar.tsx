@@ -7,18 +7,14 @@ import pinFrontClay from "../../assets/img/pin-front-clay.png"; // 회색 핀
 import trashCanFrontColor from "../../assets/img/trash-can-front-color.png";
 import DaySun from "../../assets/img/Day-Sun.png";
 import Button from "../html/Button";
+import type { KakaoPlace } from "../../types/kakao";
 
 interface SidebarProps {
-  places: Place[];
-  setPlaces: React.Dispatch<React.SetStateAction<Place[]>>;
-  onDeleteClick: (id: number) => void;
+  places: KakaoPlace[];
+  setPlaces: React.Dispatch<React.SetStateAction<KakaoPlace[]>>;
   onAddClick: () => void;
   onLogout: () => void;
-}
-
-interface Place {
-  id: number;
-  name: string;
+  onDeleteClick: (id: string) => void;
 }
 
 export default function Sidebar({
@@ -28,18 +24,19 @@ export default function Sidebar({
   onDeleteClick,
   onAddClick,
 }: SidebarProps) {
-  const [selectedId, setSelectedId] = useState<number | null>(1); //핀 고정 선택
-  const [hoveredId, setHoveredId] = useState<number | null>(null); //마우스 호버
-  const [chosenId, setChosenId] = useState<number | null>(null); //선택된 장소
+  const [selectedId, setSelectedId] = useState<string | null>(
+    places[0]?.id ?? null
+  ); //핀 고정 선택
+  const [hoveredId, setHoveredId] = useState<string | null>(null); //마우스 호버
+  const [chosenId, setChosenId] = useState<string | null>(null); //선택된 장소
 
   // 핀 클릭 → 최상단 이동
-  const handleSelect = (id: number) => {
+  const handleSelect = (id: string) => {
     const selectedPlace = places.find((p) => p.id === id);
     const others = places.filter((p) => p.id !== id);
     setPlaces([selectedPlace!, ...others]);
     setSelectedId(id); // 선택 표시도 적용
   };
-  console.log(hoveredId);
 
   return (
     <div className="flex flex-col w-[248px] h-screen items-start justify-between px-4 py-12 relative bg-variable-collection-color-gray-0 rounded-[0px_48px_48px_0px] shadow-[2px_0px_4px_#0000001a]">
@@ -78,11 +75,9 @@ export default function Sidebar({
             
                 `}
                 onMouseEnter={() => {
-                  console.log("ENTER", place.id);
                   setHoveredId(place.id);
                 }}
                 onMouseLeave={() => {
-                  console.log("LEAVE", place.id);
                   setHoveredId(null);
                 }}
               >
@@ -99,9 +94,15 @@ export default function Sidebar({
                 {/* 장소 이름 영역 클릭 → 선택 표시 */}
                 <div
                   className="flex-1 w-fit font-semibold text-variable-collection-color-gray-60 text-base overflow-hidden text-ellipsis whitespace-nowrap relative"
-                  onClick={() => setChosenId(place.id)}
+                  onClick={() => {
+                    if (place.id != chosenId) {
+                      setChosenId(place.id);
+                    } else {
+                      setChosenId(null);
+                    }
+                  }}
                 >
-                  {place.name}
+                  {place.place_name}
                 </div>
 
                 {/* hover 시 쓰레기통 아이콘  */}
