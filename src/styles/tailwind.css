@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+@theme {
+  --color-red: #ff3232;
+  --color-coral: #ffcccc;
+  --color-blue: #32a1ff;
+  --color-skyblue: #cce8ff;
+  --color-yellow: #ffc532;
+  --color-lime: #f6ffcc;
+  --color-green: #32ff35;
+  --color-mint: #ceffcc;
+  --color-purple: #7645e6;
+  --color-gray-100: #000000;
+  --color-gray-60: #292e2e;
+  --color-gray-40: #a4a4a4;
+  --color-gray-20: #d6d6d6;
+  --color-gray-10: #f2f2f2;
+  --color-gray-5: #f6f6f6;
+  --color-gray-0: #ffffff;
+}
+
 @layer base {
   html {
     font-family: Pretendard, Helvetica, sans-serif;
@@ -18,7 +37,7 @@
     @apply w-[40%] aspect-square max-w-[900px]  min-w-[100px];
   }
   .login-logo-title {
-    @apply relative w-fit text-center font-['Pretendard-SemiBold',Helvetica] font-semibold text-[#292e2e] text-lg sm:text-xl md:text-2xl lg:text-3xl min-w-[200px] tracking-[0] leading-[normal] whitespace-nowrap;
+    @apply relative w-fit text-center font-['Pretendard-SemiBold',Helvetica] font-semibold text-gray-60 text-lg sm:text-xl md:text-2xl lg:text-3xl min-w-[200px] tracking-[0] leading-[normal] whitespace-nowrap;
   }
 
   .login-input-container {
@@ -28,14 +47,14 @@
     @apply flex flex-col items-center gap-7 relative self-stretch w-full flex-[0_0_auto];
   }
   .login-input-box {
-    @apply flex items-center gap-2.5 px-0 py-3 relative self-stretch w-full min-w-8 flex-[0_0_auto] border-b-2 [border-bottom-style:solid] border-[#a4a4a4];
+    @apply flex items-center gap-2.5 px-0 py-3 relative self-stretch w-full min-w-8 flex-[0_0_auto] border-b-2 [border-bottom-style:solid] border-gray-40;
   }
   .login-input-placeholder {
-    @apply relative w-fit -mt-0.5 font-['Pretendard-Regular',Helvetica] font-normal text-[#a4a4a4] text-base sm:text-lg md:text-xl lg:text-xl min-w-[200px] tracking-[0] leading-[normal] whitespace-nowrap;
+    @apply relative w-fit -mt-0.5 font-['Pretendard-Regular',Helvetica] font-normal text-gray-40 text-base sm:text-lg md:text-xl lg:text-xl min-w-[200px] tracking-[0] leading-[normal] whitespace-nowrap;
   }
 
   .login-button-box {
-    @apply flex items-center justify-center gap-2.5 px-11 py-4 relative self-stretch w-full flex-[0_0_auto] bg-[#7544e5] rounded-2xl min-h-12;
+    @apply flex items-center justify-center gap-2.5 px-11 py-4 relative self-stretch bg-purple flex-[0_0_auto] rounded-2xl min-h-12;
   }
   .login-button-text {
     @apply relative w-fit -mt-px font-['Pretendard-SemiBold',Helvetica] font-semibold text-white text-lg sm:text-lg md:text-2xl tracking-[0] leading-[normal] whitespace-nowrap;
