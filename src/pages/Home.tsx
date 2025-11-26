@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddModal from "../components/widgets/AddModal";
 import DeleteModal from "../components/widgets/DeleteModal";
 import HomeDefault from "../components/widgets/HomeDefault";
@@ -9,12 +9,20 @@ import TodayWeatherPanel from "../components/weather/TodayWeatherPanel";
 import HourlyWeatherPanel from "../components/weather/HourlyWeatherPanel";
 import WeeklyWeatherPanel from "../components/weather/WeeklyWeatherPanel";
 import { mockToday, mockHourly, mockWeekly } from "../mock/weatherMock";
+import { logout } from "../api/auth";
+import { createLocation, deleteLocation, getLocations } from "../api/locations";
 
 export default function Home() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logout(); // API 호출은 여기서 끝
+      navigate("/");
+      console.log("로그아웃 성공");
+    } catch (e) {
+      alert("로그아웃 실패");
+    }
   };
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -22,32 +30,29 @@ export default function Home() {
 
   const [addModalOpen, setAddModalOpen] = useState(false);
 
-  const [places, setPlaces] = useState<KakaoPlace[]>([
-    {
-      id: "1",
-      place_name: "롯데월드",
-      road_address_name: "서울특별시 송파구 올림픽로 240",
-      address_name: "서울특별시 송파구 잠실동 40-1",
-      x: "127.098119",
-      y: "37.511028",
-    },
-    {
-      id: "2",
-      place_name: "서울숲",
-      road_address_name: "서울특별시 성동구 뚝섬로 273",
-      address_name: "서울특별시 성동구 성수동1가 685-1",
-      x: "127.038287",
-      y: "37.544560",
-    },
-    {
-      id: "3",
-      place_name: "경복궁",
-      road_address_name: "서울특별시 종로구 사직로 161",
-      address_name: "서울특별시 종로구 세종로 1-1",
-      x: "126.976933",
-      y: "37.579617",
-    },
-  ]);
+  const [places, setPlaces] = useState<KakaoPlace[]>([]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const locationsFromServer = await getLocations();
+        const formatted: KakaoPlace[] = locationsFromServer.map((loc: any) => ({
+          id: String(loc.id),
+          place_name: loc.locationName,
+          address_name: loc.addressName || "",
+          road_address_name: loc.roadAddressName || "",
+          x: String(loc.longitude),
+          y: String(loc.latitude),
+        }));
+        setPlaces(formatted);
+      } catch (error: any) {
+        console.error(error);
+        alert(error.message || "위치 목록 불러오기 실패");
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   // Sidebar에서 삭제 클릭 시 호출
   const openDeleteModal = (id: string) => {
@@ -56,13 +61,25 @@ export default function Home() {
   };
 
   //삭제 확인
-  const confirmDelete = () => {
-    if (deleteTargetId !== null) {
-      setPlaces(places.filter((p) => p.id !== String(deleteTargetId)));
-      setDeleteTargetId(null);
-      setDeleteModalOpen(false);
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+
+    try {
+      await deleteLocation(Number(deleteTargetId)); // ★ 서버에 삭제 요청
+
+      // UI에서도 제거
+      setPlaces((prev) => prev.filter((p) => p.id !== deleteTargetId));
+
+      alert("삭제되었습니다!");
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || "위치 삭제 실패");
     }
+
+    setDeleteTargetId(null);
+    setDeleteModalOpen(false);
   };
+
   //삭제 취소
   const cancelDelete = () => {
     setDeleteTargetId(null);
@@ -79,28 +96,43 @@ export default function Home() {
     setAddModalOpen(false);
   };
   //추가 확정
-  const confirmAdd = (selectedPlace: KakaoPlace | null) => {
-    if (selectedPlace) {
-      // 기존 places에 추가
-      setPlaces((prev) => {
-        //현재 id중 제일 큰 값 찾기
-        const maxId = prev.length
-          ? Math.max(...prev.map((p) => Number(p.id)))
-          : 0;
-
-        return [
-          ...prev,
-          {
-            ...selectedPlace,
-            id: String(Date.now()),
-          },
-        ];
-      });
+  const confirmAdd = async (selectedPlace: KakaoPlace | null) => {
+    if (!selectedPlace) {
+      setAddModalOpen(false);
+      return;
     }
+
+    try {
+      // 서버에 위치 등록
+      const created = await createLocation(
+        selectedPlace.place_name, // locationName
+        Number(selectedPlace.y), // latitude
+        Number(selectedPlace.x) // longitude
+      );
+
+      // 서버에서 만들어준 id를 사용해 UI 갱신
+      setPlaces((prev) => [
+        ...prev,
+        {
+          id: String(created.id), // 서버에서 받은 ID
+          place_name: created.locationName,
+          address_name: "",
+          road_address_name: "",
+          x: String(created.longitude),
+          y: String(created.latitude),
+        },
+      ]);
+
+      alert("위치 등록 완료!");
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || "위치 등록 실패");
+    }
+
     setAddModalOpen(false);
   };
 
-  console.log(places);
+  console.log("places:", places);
 
   return (
     <div className="flex w-screen h-screen items-center gap-0 relative bg-neutral-100">
@@ -112,14 +144,19 @@ export default function Home() {
         onLogout={handleLogout}
       />
       <div className="flex flex-col w-full items-center relative">
-        <div className="w-full flex justify-center pt-16 pb-20">
-          <div className="w-full max-w-[1100px] px-6 flex flex-col gap-12">
-            <TodayWeatherPanel data={mockToday} />
-            <HourlyWeatherPanel list={mockHourly} />
-            <WeeklyWeatherPanel data={mockWeekly} />
+        {places.length > 0 ? (
+          //추가된 장소가 있는 경우
+          <div className="w-full flex justify-center pt-16 pb-20">
+            <div className="w-full max-w-[1100px] px-6 flex flex-col gap-12">
+              <TodayWeatherPanel data={mockToday} />
+              <HourlyWeatherPanel list={mockHourly} />
+              <WeeklyWeatherPanel data={mockWeekly} />
+            </div>
           </div>
-        </div>
-        /* <HomeDefault /> */
+        ) : (
+          //추가된 장소가 없는 경우
+          <HomeDefault />
+        )}
       </div>
 
       {/* 장소 삭제 모달 + 배경 */}

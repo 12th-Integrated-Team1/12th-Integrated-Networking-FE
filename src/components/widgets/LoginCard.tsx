@@ -4,7 +4,7 @@ import Input from "../html/Input";
 import { useState } from "react";
 
 interface LoginCardProps {
-  onLogin: () => void;
+  onLogin: (loginId: string, password: string) => void;
 }
 
 export const LoginCard = ({ onLogin }: LoginCardProps) => {
@@ -13,7 +13,7 @@ export const LoginCard = ({ onLogin }: LoginCardProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // form 기본 제출 막기
-    onLogin(); // Login.tsx에서 navigate("/home")
+    onLogin(id, pw); // Login.tsx에서 navigate("/home")
   };
 
   return (

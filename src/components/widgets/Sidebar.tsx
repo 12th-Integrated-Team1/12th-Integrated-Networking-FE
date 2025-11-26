@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import mapPinFrontColor from "../../assets/img/map-pin-front-color.png";
 import plusFrontClay from "../../assets/img/plus-front-clay.png";
 import pinFrontColor from "../../assets/img/pin-front-color.png"; // 빨간 핀
@@ -8,6 +7,7 @@ import trashCanFrontColor from "../../assets/img/trash-can-front-color.png";
 import DaySun from "../../assets/img/Day-Sun.png";
 import Button from "../html/Button";
 import type { KakaoPlace } from "../../types/kakao";
+import { pinLocation } from "../../api/locations";
 
 interface SidebarProps {
   places: KakaoPlace[];
@@ -29,17 +29,27 @@ export default function Sidebar({
   ); //핀 고정 선택
   const [hoveredId, setHoveredId] = useState<string | null>(null); //마우스 호버
   const [chosenId, setChosenId] = useState<string | null>(null); //선택된 장소
+  const loginId = localStorage.getItem("userId");
 
   // 핀 클릭 → 최상단 이동
-  const handleSelect = (id: string) => {
-    const selectedPlace = places.find((p) => p.id === id);
-    const others = places.filter((p) => p.id !== id);
-    setPlaces([selectedPlace!, ...others]);
-    setSelectedId(id); // 선택 표시도 적용
+  const handleSelect = async (id: string) => {
+    try {
+      await pinLocation(Number(id)); // ★ 서버에 핀 고정 요청
+
+      // ★ UI에서도 최상단 이동
+      const selectedPlace = places.find((p) => p.id === id);
+      const others = places.filter((p) => p.id !== id);
+
+      setPlaces([selectedPlace!, ...others]);
+      setSelectedId(id);
+    } catch (error: any) {
+      console.error(error);
+      alert(error.message || "핀 고정 실패");
+    }
   };
 
   return (
-    <div className="flex flex-col w-[248px] h-screen items-start justify-between px-4 py-12 relative bg-variable-collection-color-gray-0 rounded-[0px_48px_48px_0px] shadow-[2px_0px_4px_#0000001a]">
+    <div className="flex flex-col w-[248px] min-w-[248px] h-screen items-start justify-between px-4 py-12 relative bg-variable-collection-color-gray-0 rounded-[0px_48px_48px_0px] shadow-[2px_0px_4px_#0000001a]">
       {/* ==== 상단 메뉴 ==== */}
       <div className="flex flex-col items-start gap-10 w-full z-1">
         <div className="inline-flex items-center gap-4">
@@ -129,7 +139,7 @@ export default function Sidebar({
             className="w-9 h-9 bg-center bg-cover rounded-full border border-gray-10"
             style={{ backgroundImage: `url(${DaySun})` }}
           />
-          <div className="font-semibold text-gray-60">아이디</div>
+          <div className="font-semibold text-gray-60">{loginId}</div>
         </div>
 
         <Button
