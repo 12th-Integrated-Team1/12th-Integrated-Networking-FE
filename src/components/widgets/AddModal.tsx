@@ -17,7 +17,6 @@ export default function AddModal({ onCancel, onConfirm }: AddModalProps) {
   const [selectedId, setSelectedId] = useState<string>("1");
 
   const [query, setQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<KakaoPlace[]>([]);
 
   const REST_API_KEY = "d8576c24da12ab6f950e9c029f171d8b";
 
