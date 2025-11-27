@@ -3,7 +3,7 @@ import WeatherIcon from "./WeatherIcon";
 
 // 온도 범위
 const MIN_TEMP = -10;
-const MAX_TEMP = 40;
+const MAX_TEMP = 35;
 
 export default function HourlyWeatherPanel({
   list,
@@ -14,14 +14,12 @@ export default function HourlyWeatherPanel({
   const getY = (temp: number) => {
     const ratio = (temp - MIN_TEMP) / (MAX_TEMP - MIN_TEMP);
     // 그래프 내에서만 이동하도록
-    return 70 - ratio * 50;
+    return 70 - ratio * 65;
   };
 
   return (
-    <div className="w-full p-6 bg-color-gray-0 rounded-2xl shadow-[0px_0px_8px_2px_rgba(0,0,0,0.10)] flex flex-col gap-6 overflow-hidden">
-      <h2 className="text-color-gray-100 text-xl font-bold mb-4">
-        시간별 현황
-      </h2>
+    <div className="w-full p-6 bg-gray-0 rounded-2xl shadow-[0px_0px_8px_2px_rgba(0,0,0,0.10)] flex flex-col gap-0 overflow-hidden">
+      <h2 className="text-gray-100 text-xl font-bold mb-4">시간별 현황</h2>
       {/* 스크롤 영역 */}
       <div className="w-full overflow-x-auto scrollbar-hide px-6 py-3 relative">
         <div className="relative flex gap-12 min-w-max py-1.5">
@@ -34,7 +32,7 @@ export default function HourlyWeatherPanel({
               strokeLinecap="round"
               points={list
                 .map((h, i) => {
-                  const x = i * 85 + 25;
+                  const x = i * 88 + 20;
                   const y = getY(h.temp);
                   return `${x},${y}`;
                 })
@@ -42,7 +40,7 @@ export default function HourlyWeatherPanel({
             />
             {/* 점 */}
             {list.map((h, i) => {
-              const x = i * 85 + 25;
+              const x = i * 88 + 20;
               const y = getY(h.temp);
               return (
                 <circle
@@ -68,11 +66,11 @@ export default function HourlyWeatherPanel({
                 <WeatherIcon icon={hour.icon} size={40} />
               </div>
               {/* 시간 */}
-              <div className="text-color-gray-40 text-xs font-normal font-['Pretendard']">
+              <div className="text-gray-40 text-xs font-normal font-['Pretendard']">
                 {hour.time}
               </div>
               {/* 온도 */}
-              <div className="text-color-gray-60 text-xs font-semibold font-['Pretendard']">
+              <div className="text-gray-60 text-xs font-semibold font-['Pretendard']">
                 {hour.temp}°
               </div>
             </div>

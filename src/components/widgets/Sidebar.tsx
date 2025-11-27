@@ -15,6 +15,7 @@ interface SidebarProps {
   onAddClick: () => void;
   onLogout: () => void;
   onDeleteClick: (id: string) => void;
+  onSelect: (id: string) => void;
 }
 
 export default function Sidebar({
@@ -23,6 +24,7 @@ export default function Sidebar({
   setPlaces,
   onDeleteClick,
   onAddClick,
+  onSelect,
 }: SidebarProps) {
   const [selectedId, setSelectedId] = useState<string | null>(
     places[0]?.id ?? null
@@ -42,6 +44,8 @@ export default function Sidebar({
 
       setPlaces([selectedPlace!, ...others]);
       setSelectedId(id);
+      // Home.tsx로 선택된 ID 전달
+      onSelect(id);
     } catch (error: any) {
       console.error(error);
       alert(error.message || "핀 고정 실패");
@@ -110,6 +114,8 @@ export default function Sidebar({
                     } else {
                       setChosenId(null);
                     }
+                    // API 연동 위한 선택 ID 전달
+                    onSelect(place.id);
                   }}
                 >
                   {place.place_name}
