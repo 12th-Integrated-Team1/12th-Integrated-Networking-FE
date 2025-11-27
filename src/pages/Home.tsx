@@ -8,7 +8,7 @@ import type { KakaoPlace } from "../types/kakao";
 import TodayWeatherPanel from "../components/weather/TodayWeatherPanel";
 import HourlyWeatherPanel from "../components/weather/HourlyWeatherPanel";
 import WeeklyWeatherPanel from "../components/weather/WeeklyWeatherPanel";
-import { mockToday, mockHourly, mockWeekly } from "../mock/weatherMock";
+import { useWeather } from "../hooks/useWeather";
 import { logout } from "../api/auth";
 import { createLocation, deleteLocation, getLocations } from "../api/locations";
 
@@ -20,7 +20,7 @@ export default function Home() {
       await logout(); // API 호출은 여기서 끝
       navigate("/");
       console.log("로그아웃 성공");
-    } catch (e) {
+    } catch {
       alert("로그아웃 실패");
     }
   };
@@ -31,6 +31,7 @@ export default function Home() {
   const [addModalOpen, setAddModalOpen] = useState(false);
 
   const [places, setPlaces] = useState<KakaoPlace[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -45,14 +46,18 @@ export default function Home() {
           y: String(loc.latitude),
         }));
         setPlaces(formatted);
-      } catch (error: any) {
-        console.error(error);
-        alert(error.message || "위치 목록 불러오기 실패");
+      } catch (err) {
+        console.error(err);
+        alert("위치 목록 불러오기 실패");
       }
     };
 
     fetchLocations();
   }, []);
+  // Weather API 연동
+  const { today, hourly, weekly, loading } = useWeather(
+    selectedId ? Number(selectedId) : null
+  );
 
   // Sidebar에서 삭제 클릭 시 호출
   const openDeleteModal = (id: string) => {
@@ -69,7 +74,6 @@ export default function Home() {
 
       // UI에서도 제거
       setPlaces((prev) => prev.filter((p) => p.id !== deleteTargetId));
-
       alert("삭제되었습니다!");
     } catch (error: any) {
       console.error(error);
@@ -142,15 +146,26 @@ export default function Home() {
         onDeleteClick={openDeleteModal}
         onAddClick={openAddModal}
         onLogout={handleLogout}
+        onSelect={(id) => setSelectedId(id)}
       />
       <div className="flex flex-col w-full items-center relative">
         {places.length > 0 ? (
           //추가된 장소가 있는 경우
           <div className="w-full flex justify-center pt-16 pb-20">
             <div className="w-full max-w-[1100px] px-6 flex flex-col gap-12">
-              <TodayWeatherPanel data={mockToday} />
-              <HourlyWeatherPanel list={mockHourly} />
-              <WeeklyWeatherPanel data={mockWeekly} />
+              {/* 로딩 중 */}
+              {loading && (
+                <p className="text-gray-60 text-lg">날씨 불러오는 중...</p>
+              )}
+
+              {/* 실제 패널 */}
+              {!loading && today && (
+                <>
+                  <TodayWeatherPanel data={today} />
+                  <HourlyWeatherPanel list={hourly} />
+                  <WeeklyWeatherPanel data={weekly} />
+                </>
+              )}
             </div>
           </div>
         ) : (

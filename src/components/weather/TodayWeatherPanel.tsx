@@ -1,59 +1,73 @@
 import WeatherIcon from "./WeatherIcon";
 import type { TodayWeather } from "../../types/weather";
 
+// 낮/야간 판별
+function getDayPeriod(): "낮" | "야간" {
+  const hour = new Date().getHours();
+  return hour >= 18 || hour < 6 ? "야간" : "낮";
+}
+
+// 아이콘 결정 (날씨 + 시간대 기준)
+function getTodayIcon(weatherMain: string) {
+  const period = getDayPeriod();
+  const isNight = period === "야간";
+
+  if (weatherMain.includes("비")) return isNight ? "Night-Rain" : "Day-Rain";
+  if (weatherMain.includes("눈")) return isNight ? "Night-Snow" : "Day-Snow";
+  if (weatherMain.includes("흐림") || weatherMain.includes("구름"))
+    return isNight ? "Night-Clouds" : "Day-Clouds";
+
+  return isNight ? "Night-Sun" : "Day-Sun";
+}
+
 export default function TodayWeatherPanel({ data }: { data: TodayWeather }) {
   if (!data) return null;
 
+  const dayPeriod = getDayPeriod();
+  const todayIcon = getTodayIcon(data.status);
+  const pureDate = data.date.split(" ").slice(0, 2).join(" ");
+
   return (
-    <div className="w-full p-8 bg-color-gray-0 rounded-2xl shadow-[0px_0px_8px_2px_rgba(0,0,0,0.10)]">
-      <h2 className="text-color-gray-100 text-xl font-bold mb-4">
-        {data.date} {data.locationName} 날씨 현황
+    <div className="w-full p-8 bg-gray-0 rounded-2xl shadow-[0px_0px_8px_2px_rgba(0,0,0,0.10)]">
+      <h2 className="text-gray-100 text-xl font-bold mb-4">
+        {pureDate} {data.locationName} 날씨 현황
       </h2>
       {/* 아이콘/온도 */}
       <div className="mt-4 flex flex-col items-center gap-2.5">
         <div className="flex items-center justify-center gap-2.5">
-          <WeatherIcon icon={data.icon} size={160} />
-          <p className="text-color-gray-60 text-7xl font-bold">
-            {data.temperature}°
+          <WeatherIcon icon={todayIcon} size={160} />
+          <p className="text-gray-60 text-7xl font-bold">
+            {Number(data.temperature).toFixed(1)}°
           </p>
         </div>
         {/* 상태 */}
-        <p className="text-color-gray-60 text-xl font-semibold">
-          {data.status}
+        <p className="text-gray-60 text-xl font-semibold">
+          {dayPeriod} / {data.status}
         </p>
         {/* 상세 정보 (체감/습도/바람) */}
         <div className="flex items-center justify-center gap-2 mt-1">
           {/* 체감 */}
           <div className="flex items-center">
-            <span className="text-color-gray-40 text-base font-medium">
-              체감
-            </span>
-            <span className="text-color-gray-60 text-base font-medium">
-              {" "}
+            <span className="text-gray-40 text-base font-medium">체감</span>
+            <span className="text-gray-60 text-base font-medium">
               {data.feelsLike}°
             </span>
           </div>
           {/* 구분점 */}
-          <span className="text-color-gray-40 text-[8px] font-medium">●</span>
+          <span className="text-gray-40 text-[8px] font-medium">●</span>
           {/* 습도 */}
           <div className="flex items-center">
-            <span className="text-color-gray-40 text-base font-medium">
-              습도
-            </span>
-            <span className="text-color-gray-60 text-base font-medium">
-              {" "}
+            <span className="text-gray-40 text-base font-medium">습도 </span>
+            <span className="text-gray-60 text-base font-medium">
               {data.humidity}%
             </span>
           </div>
           {/* 구분점 */}
-          <span className="text-color-gray-40 text-[8px] font-medium">●</span>
+          <span className="text-gray-40 text-[8px] font-medium">●</span>
           {/* 바람 */}
           <div className="flex items-center">
-            <span className="text-color-gray-40 text-base font-medium">
-              바람
-            </span>
-            <span className="text-color-gray-60 text-base font-medium">
-              {" "}
+            <span className="text-gray-40 text-base font-medium">바람 </span>
+            <span className="text-gray-60 text-base font-medium">
               {data.windSpeed}m/s
             </span>
           </div>
@@ -81,16 +95,16 @@ function Badge({
   color: "blue" | "green" | "red" | "yellow";
 }) {
   const bgColors = {
-    blue: "bg-color-skyblue",
-    green: "bg-color-mint",
-    red: "bg-color-coral",
-    yellow: "bg-color-lime",
+    blue: "bg-skyblue",
+    green: "bg-mint",
+    red: "bg-coral",
+    yellow: "bg-lime",
   };
   const textColors = {
-    blue: "text-color-blue",
-    green: "text-color-green",
-    red: "text-color-red",
-    yellow: "text-color-yellow",
+    blue: "text-blue",
+    green: "text-green",
+    red: "text-red",
+    yellow: "text-yellow",
   };
   return (
     <div
