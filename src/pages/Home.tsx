@@ -127,7 +127,7 @@ export default function Home() {
         },
       ]);
 
-      alert("위치 등록 완료!");
+      alert("등록되었습니다!");
     } catch (error: any) {
       console.error(error);
       alert(error.message || "위치 등록 실패");
@@ -135,8 +135,6 @@ export default function Home() {
 
     setAddModalOpen(false);
   };
-
-  console.log("places:", places);
 
   return (
     <div className="flex w-screen h-screen items-center gap-0 relative bg-neutral-100">
@@ -152,7 +150,7 @@ export default function Home() {
         {places.length > 0 ? (
           //추가된 장소가 있는 경우
           <div className="w-full flex justify-center pt-16 pb-20">
-            <div className="w-full max-w-[1100px] px-6 flex flex-col gap-12">
+            <div className="w-full max-w-[1100px] px-6 flex flex-col gap-12 items-center">
               {/* 로딩 중 */}
               {loading && (
                 <p className="text-gray-60 text-lg">날씨 불러오는 중...</p>
